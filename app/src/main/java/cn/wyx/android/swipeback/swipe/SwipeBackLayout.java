@@ -370,14 +370,14 @@ public class SwipeBackLayout extends RelativeLayout {
                 case LEFT:
                     src = new Rect(mLastScreenshot.getWidth() - target.getLeft(), 0,
                             mLastScreenshot.getWidth(), mLastScreenshot.getHeight());
-                    dst = new Rect(0, isFullscreen ? statusBarHeight : target.getBottom() - mLastScreenshot.getHeight(), right, target.getHeight() - navigationBarHeight);
+                    dst = new Rect(0, isFullscreen ? statusBarHeight : target.getBottom() - mLastScreenshot.getHeight(), right, isFullscreen ? target.getHeight() - navigationBarHeight : target.getBottom());
 
                     break;
                 case RIGHT:
                     src = new Rect(0, 0,
                             mLastScreenshot.getWidth() - target.getRight(), mLastScreenshot.getHeight());
                     dst = new Rect(target.getRight(), isFullscreen ? statusBarHeight : target.getBottom() - mLastScreenshot.getHeight(),
-                            mLastScreenshot.getWidth(), target.getHeight() - navigationBarHeight);
+                            mLastScreenshot.getWidth(), isFullscreen ? target.getHeight() - navigationBarHeight : target.getBottom());
                     break;
 
                 case TOP:
@@ -443,7 +443,7 @@ public class SwipeBackLayout extends RelativeLayout {
         //获取NavigationBar的高度
         return resources.getDimensionPixelSize(resourceId);
     }
-    
+
 
     public enum DragEdge {
         LEFT,

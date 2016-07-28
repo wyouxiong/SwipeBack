@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -114,7 +113,6 @@ public class SwipeBackActivity extends AppCompatActivity implements SwipeBackLay
             boolean success = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             stream.flush();
             stream.close();
-            Toast.makeText(this, success + "", Toast.LENGTH_LONG).show();
 
         } catch (java.io.IOException e) {
             e.printStackTrace();
