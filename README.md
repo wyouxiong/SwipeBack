@@ -2,7 +2,9 @@
 支持手势滑动关闭Activity，支持上下左右四个方向。在滑动关闭时，会像微信一样显示上一个页面和一条阴影
 
 # Screenshot
+>鼠标操作不便，所以截图中有卡顿，但真机效果还是不错的。
 
+![](http://i.imgur.com/wF0v1q6.gif)
 
 # Usage
 ## 1 在Activity的theme必须指定以下两项：
