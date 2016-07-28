@@ -18,6 +18,7 @@ package cn.wyx.android.swipeback.swipe;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -35,6 +36,8 @@ import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+
+import java.lang.reflect.Field;
 
 import cn.wyx.android.swipeback.R;
 
@@ -82,6 +85,8 @@ public class SwipeBackLayout extends RelativeLayout {
      */
     private Bitmap mLastScreenshot;
 
+    private boolean isFullscreen;
+
     public SwipeBackLayout(Context context) {
         this(context, null);
     }
@@ -91,6 +96,23 @@ public class SwipeBackLayout extends RelativeLayout {
         setWillNotDraw(false);
         mShadow = getResources().getDrawable(R.drawable.left_shadow);
         viewDragHelper = ViewDragHelper.create(this, 1.0f, new ViewDragHelperCallBack());
+    }
+
+    public int getStatusBarHeight() {
+        Class<?> c = null;
+        Object obj = null;
+        Field field = null;
+        int x = 0, statusBarHeight = 0;
+        try {
+            c = Class.forName("com.android.internal.R$dimen");
+            obj = c.newInstance();
+            field = c.getField("status_bar_height");
+            x = Integer.parseInt(field.get(obj).toString());
+            statusBarHeight = getResources().getDimensionPixelSize(x);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        return statusBarHeight;
     }
 
     public void setDragEdge(DragEdge dragEdge) {
@@ -119,7 +141,6 @@ public class SwipeBackLayout extends RelativeLayout {
     public void setOnPullToBackListener(SwipeBackListener listener) {
         swipeBackListener = listener;
     }
-
 
     public void setLastScreenshot(Bitmap lastScreenshot) {
         this.mLastScreenshot = lastScreenshot;
@@ -336,31 +357,38 @@ public class SwipeBackLayout extends RelativeLayout {
             paint.setAntiAlias(true);
             Rect src = new Rect(mLastScreenshot.getWidth() - target.getLeft(), 0,
                     mLastScreenshot.getWidth(), target.getBottom());
-            //防止target为全屏的
+            //防止target扩展到状态栏
             Rect dst = new Rect(0, target.getBottom() - mLastScreenshot.getHeight(), right, target.getBottom());
+
+            int navigationBarHeight = getNavigationBarHeight();
+
+            isFullscreen = target.getHeight() == getResources().getDisplayMetrics().heightPixels + navigationBarHeight;
+
+            int statusBarHeight = getStatusBarHeight();
 
             switch (dragEdge) {
                 case LEFT:
                     src = new Rect(mLastScreenshot.getWidth() - target.getLeft(), 0,
-                            mLastScreenshot.getWidth(), target.getBottom());
-                    dst = new Rect(0, target.getBottom() - mLastScreenshot.getHeight(), right, target.getBottom());
+                            mLastScreenshot.getWidth(), mLastScreenshot.getHeight());
+                    dst = new Rect(0, isFullscreen ? statusBarHeight : target.getBottom() - mLastScreenshot.getHeight(), right, target.getHeight() - navigationBarHeight);
 
                     break;
                 case RIGHT:
                     src = new Rect(0, 0,
-                            mLastScreenshot.getWidth() - target.getRight(), target.getBottom());
-                    dst = new Rect(mLastScreenshot.getWidth() - target.getRight(), target.getBottom() - mLastScreenshot.getHeight(), right, target.getBottom());
+                            mLastScreenshot.getWidth() - target.getRight(), mLastScreenshot.getHeight());
+                    dst = new Rect(target.getRight(), isFullscreen ? statusBarHeight : target.getBottom() - mLastScreenshot.getHeight(),
+                            mLastScreenshot.getWidth(), target.getHeight() - navigationBarHeight);
                     break;
 
                 case TOP:
                     src = new Rect(0, mLastScreenshot.getHeight() - target.getTop(),
                             mLastScreenshot.getWidth(), target.getBottom());
-                    dst = new Rect(0, target.getBottom() - mLastScreenshot.getHeight(), right, target.getTop());
+                    dst = new Rect(0, 0, target.getRight(), target.getTop());
                     break;
                 case BOTTOM:
                     src = new Rect(0, 0, mLastScreenshot.getWidth(), mLastScreenshot.getHeight() - target.getBottom());
-                    dst = new Rect(0, mLastScreenshot.getHeight() - target.getBottom(), mLastScreenshot.getWidth(),
-                            target.getBottom());
+                    dst = new Rect(0, target.getBottom(), mLastScreenshot.getWidth(),
+                            mLastScreenshot.getHeight());
                     break;
             }
 
@@ -408,6 +436,14 @@ public class SwipeBackLayout extends RelativeLayout {
             mLastScreenshot = null;
         }
     }
+
+    private int getNavigationBarHeight() {
+        Resources resources = getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        //获取NavigationBar的高度
+        return resources.getDimensionPixelSize(resourceId);
+    }
+    
 
     public enum DragEdge {
         LEFT,
@@ -488,6 +524,7 @@ public class SwipeBackLayout extends RelativeLayout {
 
         @Override
         public void onViewDragStateChanged(int state) {
+
             if (state == draggingState) return;
 
             if ((draggingState == ViewDragHelper.STATE_DRAGGING || draggingState == ViewDragHelper.STATE_SETTLING) &&

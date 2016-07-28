@@ -1,6 +1,5 @@
 package cn.wyx.android.swipeback;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import cn.wyx.android.swipeback.swipe.SwipeBackActivity;

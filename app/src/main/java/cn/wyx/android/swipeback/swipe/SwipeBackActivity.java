@@ -4,13 +4,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
@@ -102,6 +100,7 @@ public class SwipeBackActivity extends AppCompatActivity implements SwipeBackLay
      * @param intent
      */
     private void addScreenshotBundle(Intent intent) {
+
         ViewGroup content = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
         content.destroyDrawingCache();//释放绘图资源所占缓存,不然可能导致获取到的view视图是错误的
         content.buildDrawingCache();

@@ -1,10 +1,9 @@
 package cn.wyx.android.swipeback;
 
 import android.annotation.SuppressLint;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -90,6 +89,7 @@ public class FullscreenActivity extends SwipeBackActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_fullscreen);
+
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
